@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, SafeAreaView, StatusBar } from "react-native";
 import PrayerList from "../components/PrayerList";
+import BannerAd from "../components/BannerAd";
 
 export default function DashboardScreen() {
   return (
@@ -15,7 +16,14 @@ export default function DashboardScreen() {
         </View>
 
         {/* Prayer List */}
-        <PrayerList />
+        <View className="flex-1">
+          <PrayerList />
+        </View>
+
+        {/* Banner Ad at bottom */}
+        <View className="bg-white">
+          <BannerAd />
+        </View>
       </View>
     </SafeAreaView>
   );

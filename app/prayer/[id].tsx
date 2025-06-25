@@ -6,9 +6,11 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react-native";
+import RewardedAd from "../../components/RewardedAd";
 
 const BASEROW_TOKEN = "E9JWNrxQYtMdmAYbpTgyanV6sYdDzzfO";
 const TABLE_ID = "581962";
@@ -25,6 +27,8 @@ export default function PrayerDetail() {
   const [prayers, setPrayers] = useState<Prayer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasEarnedReward, setHasEarnedReward] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
 
   useEffect(() => {
     fetchPrayers();
@@ -86,6 +90,16 @@ export default function PrayerDetail() {
     router.push("/");
   };
 
+  const handleRewardEarned = () => {
+    setHasEarnedReward(true);
+    setShowTranslation(true);
+    Alert.alert(
+      "Reward Diterima!",
+      "Anda telah mendapatkan akses ke terjemahan doa. Terima kasih telah menonton iklan!",
+      [{ text: "OK" }]
+    );
+  };
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centered]}>
@@ -130,6 +144,30 @@ export default function PrayerDetail() {
       <ScrollView style={styles.content}>
         <View style={styles.prayerCard}>
           <Text style={styles.arabicText}>{currentPrayer["Lafadz Doa"]}</Text>
+
+          {/* Rewarded Ad Section */}
+          {!hasEarnedReward && (
+            <View style={styles.rewardSection}>
+              <Text style={styles.rewardText}>
+                Tonton iklan untuk mendapatkan terjemahan doa
+              </Text>
+              <RewardedAd
+                onRewardEarned={handleRewardEarned}
+                buttonText="Dapatkan Terjemahan"
+              />
+            </View>
+          )}
+
+          {/* Translation (shown after reward) */}
+          {showTranslation && hasEarnedReward && (
+            <View style={styles.translationSection}>
+              <Text style={styles.translationTitle}>Terjemahan:</Text>
+              <Text style={styles.translationText}>
+                "Ya Allah, berikanlah kami petunjuk dan kemudahan dalam menjalani hari ini.
+                Lindungilah kami dari segala keburukan dan berikanlah keberkahan dalam setiap langkah kami."
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
 
@@ -247,5 +285,38 @@ const styles = StyleSheet.create({
     color: "#EAEBD0",
     fontSize: 16,
     fontWeight: "500",
+  },
+  rewardSection: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  rewardText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  translationSection: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: "#e8f5e8",
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#4CAF50",
+  },
+  translationTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#2E7D32",
+    marginBottom: 8,
+  },
+  translationText: {
+    fontSize: 16,
+    color: "#333",
+    lineHeight: 24,
+    textAlign: "justify",
   },
 });
